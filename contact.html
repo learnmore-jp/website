@@ -58,13 +58,37 @@
         </div>
         <main id="contact" class="main">
             <div class="section section--contact">
-                <iframe 
-    src="https://docs.google.com/forms/d/e/1FAIpQLScGN3BkTGPPsGDPnOxUAIN528DGnCQiSjFqGLZYZyxOANb-mA/viewform?embedded=true" 
-    width="640" 
-    height="811" 
-    style="border: none;">
-</iframe>
-</div>
+                <h2 class="section__title__small--green contact__title">お問い合わせ</h2>
+                <form id="contactForm" class="contact__form">
+                    <div class="contact__form__group">
+                        <label class="contact__form__label" for="name">お名前 <span class="contact__required">必須</span></label>
+                        <input class="contact__form__input" type="text" id="name" name="name" required>
+                    </div>
+                    <div class="contact__form__group">
+                        <label class="contact__form__label" for="email">メールアドレス <span class="contact__required">必須</span></label>
+                        <input class="contact__form__input" type="email" id="email" name="email" required>
+                    </div>
+                    <div class="contact__form__group">
+                        <label class="contact__form__label" for="category">お問い合わせ種別 <span class="contact__required">必須</span></label>
+                        <select class="contact__form__input contact__form__select" id="category" name="category" required>
+                            <option value="">選択してください</option>
+                            <option value="学校・自治体の方">学校・自治体の方</option>
+                            <option value="保護者の方">保護者の方</option>
+                            <option value="ボランティア希望">ボランティア希望</option>
+                            <option value="寄付について">寄付について</option>
+                            <option value="その他">その他</option>
+                        </select>
+                    </div>
+                    <div class="contact__form__group">
+                        <label class="contact__form__label" for="message">お問い合わせ内容 <span class="contact__required">必須</span></label>
+                        <textarea class="contact__form__input contact__form__textarea" id="message" name="message" rows="6" required></textarea>
+                    </div>
+                    <div class="contact__form__btnBox">
+                        <button class="btn contact__form__btn" type="submit">送信する</button>
+                    </div>
+                    <p id="contactMsg" class="contact__msg"></p>
+                </form>
+            </div>
         </main>
         <footer class="footer">
             <div class="footer__pcBox">
@@ -112,5 +136,48 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 
     <script src="assets/js/main.js"></script>
+    <script>
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbyRgqdunDUvivvYY5dxe2A_JDD6EiIEoJkq9EcTtv9hNN_qzVVWABoseSRvWM7vl3jB/exec';
+
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('button[type="submit"]');
+            const msg = document.getElementById('contactMsg');
+            btn.disabled = true;
+            btn.textContent = '送信中...';
+            msg.textContent = '';
+            msg.className = 'contact__msg';
+
+            const data = {
+                name:     document.getElementById('name').value,
+                email:    document.getElementById('email').value,
+                category: document.getElementById('category').value,
+                message:  document.getElementById('message').value,
+            };
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify(data),
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(json) {
+                if (json.result === 'success') {
+                    msg.textContent = 'お問い合わせを受け付けました。ありがとうございます。';
+                    msg.classList.add('contact__msg--success');
+                    document.getElementById('contactForm').reset();
+                } else {
+                    throw new Error();
+                }
+            })
+            .catch(function() {
+                msg.textContent = '送信に失敗しました。時間をおいて再度お試しください。';
+                msg.classList.add('contact__msg--error');
+            })
+            .finally(function() {
+                btn.disabled = false;
+                btn.textContent = '送信する';
+            });
+        });
+    </script>
 </body>
 </html>
