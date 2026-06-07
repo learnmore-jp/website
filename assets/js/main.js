@@ -13,14 +13,6 @@ $(function () {
         $('#header__btn').removeClass('active'); // ボタンのスタイルも戻す
     });
 
-    // Slick スライダー（そのまま）
-    $('.customer__slider').slick({
-        dots: true,
-        infinite: true,
-        speed: 300,
-        slidesToShow: 1,
-        adaptiveHeight: true
-    });
 });
 
 
